@@ -1,10 +1,5 @@
 package Connect;
 
-//NAME: SIMAR BHAMRA
-//STUDENT ID: 6364665
-//ASSIGNMENT: 1 (COSC 3P71)
-
-import java.util.Random;
 import java.util.Scanner;
 
 public class Main {
@@ -14,9 +9,6 @@ public class Main {
         System.out.println("Welcome to Connect 4");
         int choice;
         System.out.println("Press:\n1) Player vs Player\n2) Player vs Computer");
-
-//        int player1 = 0;
-//        int player2 = 1;
 
         Scanner scanner = new Scanner(System.in);
         choice = scanner.nextInt();
