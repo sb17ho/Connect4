@@ -1,222 +1,123 @@
 package Connect;
 
-/*GamePlay a.k.a AI class
-* Handles everything related to AI ie.:
-* Handling board evaluation based on the disk in the board and providing a heuristics score based on the best score evaluated by AI
-* Traverses the entire boards to provide the heuristics function rows and columns to evaluate score based on the disk in the board
-* Checks for the valid columns and provide an array of columns that are empty and suitable to take a move
-* Minimax: Works on making the child nodes of the root board and making evaluation based on the moves that AI can make for
-           * the best heuristic score as well as checking the moves that the opponent can make and evaluating accordingly to provide
-           * the possible score possible provided that the player plays optimally*/
-
-import java.util.ArrayList;
+import GUI.GamePlayAdapter;
 
 public class GamePlay {
+    private static int player1turns = 0;
+    private static int player2turns = 0;
+    public static boolean gameEnd = false; //TODO Will need to use it where the animation function would be
 
-    Board gameBoard;
+    public static void playerVsPlayer(GamePlayAdapter gamePlayAdapter, int column,
+                                      int turn) {
+        char c;
+        int row = -1;
 
-    GamePlay(Board board) {
-        gameBoard = board;
-    }
+        if (turn == -1) { //Player 1
+            //Checks if the move made by the player is valid or not
+            if (gamePlayAdapter.getValidMove()) {
+                c = 'X';
+                //Update the boards according to the choice of column made by player
+                row = gamePlayAdapter.updateBoard(c, column);
+                player1turns++;
 
-    //Evaluates the board based on the rows and columns provided by the heuristics method and providing the score
-    //based on the number of opponent and Player disks
-    int evaluate_score(char[] check, char c) {
-        int score = 0;
-        int diskcount = 0;
-        int blankcount = 0;
-        int oppcount = 0;
-        char opponent = 'X';
-
-        if (c == 'X') {
-            opponent = 'O';
-        }
-
-        //Player disk
-        for (int i = 0; i < check.length; i++) {
-            if (check[i] == c) {
-                diskcount++;
-            } else if (check[i] == ' ') {
-                blankcount++;
-            } else if (check[i] == opponent) {
-                oppcount++;
-            }
-        }
-
-        if (diskcount == 4) {
-            return 10000000;
-        } else if (oppcount == 4) {
-            return -10000000;
-        }
-
-        if (diskcount == 3 && blankcount == 1) {
-            score += 5;
-        } else if (diskcount == 2 && blankcount == 2) {
-            score += 2;
-        }
-
-        if (diskcount == 1 && blankcount == 1 && oppcount == 2){
-            score -= 3;
-        }else if(diskcount==2 && blankcount == 1 && oppcount ==1){
-            score += 1;
-        }
-
-        if (oppcount == 3 && blankcount == 1) {
-            score -= 100;
-        }
-
-        return score;
-    }
-
-    //Traverse the entire board and provide the evaluation function an array of rows, columns and diagonal to return a score based on the number of
-    //AI and Player disks for to function to return the score based on the move made by the AI.
-    int heuristics_win(Board board, char c) {
-        int moveScore = 0;
-        int centerpiece = 0;
-
-        int center = (board.token[0].length / 2);
-        for (int i = 0; i < board.token.length; i++) {
-            if (board.token[i][center].disk == c) {
-                centerpiece++;
-            }
-        }
-        moveScore += centerpiece * 3; // giving center main priority since its easy making 4 connects by filling the center column.
-
-
-        //horizontal
-        for (int i = 0; i < board.token.length; i++) {
-            char[] row = new char[4];
-            for (int j = 0; j < board.token[0].length - 3; j++) {
-                for (int k = 0; k < 4; k++) {
-                    row[k] = board.token[i][j + k].disk;
+                //If the player 1 has made 4 moves then it checks if there is any winning case
+                if (player1turns >= 4) {
+                    char[] check = gamePlayAdapter.findWinner(); //Checks of the winner on the entire board
+                    if (check[0] == 'T') {
+                        if (check[1] == 'X') {
+                            gamePlayAdapter.displayWinner("Player 1 Wins");
+                            gameEnd = true;
+                        } //TODO Output this to GUI
+                    }
                 }
-                moveScore += evaluate_score(row, c);
-                //System.out.println(moveScore);
-            }
-        }
-        //vertical
-        for (int i = 0; i < board.token.length - 3; i++) {
-            char[] col = new char[4];
-            for (int j = 0; j < board.token[0].length; j++) {
-                for (int k = 0; k < 4; k++) {
-                    col[k] = board.token[i + k][j].disk;
-                }
-                moveScore += evaluate_score(col, c);
-            }
-        }
-
-        //diagonal
-        for (int i = 0; i < board.token.length - 3; i++) {
-            char[] diag = new char[4];
-            for (int j = 0; j < board.token[0].length - 3; j++) {
-                for (int k = 0; k < 4; k++) {
-                    diag[k] = board.token[i + k][j + k].disk;
-                }
-                moveScore += evaluate_score(diag, c);
-                //System.out.println(moveScore);
-            }
-        }
-
-        //diagonal opposite direction
-        for (int i = 0; i < board.token.length - 3; i++) {
-            char[] slopdiag = new char[4];
-            for (int j = 3; j < board.token[0].length; j++) {
-                for (int k = 0; k < 4; k++) {
-                    slopdiag[k] = board.token[i + k][j - k].disk;
-                }
-                moveScore += evaluate_score(slopdiag, c);
-            }
-        }
-
-        return moveScore;
-
-    }
-
-    //Provides an array of valid columns where the AI can make moves
-    ArrayList<Integer> valid_columns(Board board) {
-        ArrayList<Integer> validcol = new ArrayList<>();
-        for (int i = 0; i < board.token[0].length; i++) {
-            if (board.valid_move(board, i)) {
-                validcol.add(i);
-            }
-        }
-        return validcol;
-    }
-
-    //Checks of the board is full #NOT USING NOW
-    boolean isFull(Board board) {
-        boolean result = false;
-        int count = 0;
-        for (int i = 0; i < board.token.length; i++) {
-            for (int j = 0; j < board.token[0].length; j++) {
-                if (board.token[i][j].disk != ' ') {
-                    count++;
-                }
-            }
-        }
-        if (count == (board.token.length * board.token[0].length)) result = true;
-
-        return result;
-    }
-
-   /* Minimax: Works on making the child nodes of the root board and making evaluation based on the moves that AI can make for
-            *  the best heuristic score as well as checking the moves that the opponent can make and evaluating accordingly to provide
-            *  the possible score possible provided that the player plays optimally*/
-
-    int minimax(Board board, int depth, boolean maxplayer) {
-        char[] winner = board.foundWinner(board);
-        boolean playerwin = false;
-        boolean AI_win = false;
-
-        if (winner[0] == 'T' && winner[1] == 'X') {
-            playerwin = true;
-        } else if (winner[0] == 'T' && winner[1] == 'O') {
-            AI_win = true;
-        }
-
-        ArrayList<Integer> valid_locations = valid_columns(board);
-
-        if (depth == 0 || board.isFull(board)) {
-//            if (playerwin) {
-//                return -1000000000;
-//            } else if (AI_win) {
-//                return 1000000000
-//          }
-            if (board.isFull(board)) {
-                return 0;
             } else {
-                return heuristics_win(board, 'O');
+                gamePlayAdapter.displayWinner("Column is full, make a valid move");
+            }
+        } else if (turn == 1) {  //Player 2
+            //checks if the move made player is valid or not
+            if (gamePlayAdapter.getValidMove()) {
+                c = 'O';
+                //updates the board according to the column selected by player
+                row = gamePlayAdapter.updateBoard(c, column);
+                player2turns++;
+
+                if (player2turns >= 4) {
+                    //If the player has made 4 moves then check for a winning case
+                    char[] check = gamePlayAdapter.findWinner();
+                    //checks if there is any win case in the entire board
+                    if (check[0] == 'T') {
+                        if (check[1] == 'O') {
+                            gamePlayAdapter.displayWinner("Player 2 Wins");
+                            gameEnd = true;
+                        }
+                    }
+                }
+            } else {
+                gamePlayAdapter.displayWinner("Column is full, make a valid move");
             }
         }
-        if (maxplayer) {
-            int value = Integer.MIN_VALUE;
-            char c = 'O';
-            //Random rand = new Random();
-            int best_col = 0;
-            for (Integer x : valid_locations) {
-                Board temp = board.duplicate(board);
-                temp.updateBoard(temp, c, x);
-                int score = minimax(temp, depth - 1, false);
-                if (score > value) {
-                    value = score;
-                    best_col = x;
+        gamePlayAdapter.addDice(row, gamePlayAdapter.getColumn());
+    }
+
+    public static void playerVsAI(int difficultyChoice, GamePlayAdapter gamePlayAdapter, int column,
+                                  int turn) {
+        //AI vs Human
+        AILogic game = new AILogic(gamePlayAdapter.getBoard());
+        char c;
+        int row = -1;
+
+        if (turn == -1) { //Human
+            if (gamePlayAdapter.getValidMove()) {
+                c = 'X';
+                //checks if the move made by the player is valid or not
+                row = gamePlayAdapter.updateBoard(c, column);
+
+                //updates the board according to the column input by the player
+                player1turns++;
+                gamePlayAdapter.printBoard();
+
+                if (player1turns >= 4) {
+                    //if the player made 4 movies, checks for a win case
+                    char[] check = gamePlayAdapter.findWinner();
+                    if (check[0] == 'T') {
+                        if (check[1] == 'X') {
+                            {
+                                gamePlayAdapter.displayWinner("Player wins");
+                                gameEnd = true;
+                            }
+                        }
+                    }
+                }
+            } else {
+                gamePlayAdapter.displayWinner("Column is full, make a valid move");
+            }
+            gamePlayAdapter.addDice(row, gamePlayAdapter.getColumn());
+            turn *= -1;
+            gamePlayAdapter.setTurn(turn);
+        }
+        if (turn == 1) { //AI
+            //AI looks for the best possible move as the move made by the human, provided if the plays optimally
+            int aiColumn = game.minimax(gamePlayAdapter.getBoard(), difficultyChoice, true);
+            System.out.println("Difficulty: " + difficultyChoice);
+            c = 'O';
+
+            row = gamePlayAdapter.getBoard().updateBoard(c, aiColumn);
+
+            //updates the boards according to the best column selected by AI
+            gamePlayAdapter.printBoard();
+            player2turns++;
+            if (player2turns >= 4) {
+                char[] check = gamePlayAdapter.findWinner();
+
+                //Check[0] means winner found and check[1] checks which disk it is to determine the winner
+                if (check[0] == 'T') {
+                    if (check[1] == 'O') {
+                        gamePlayAdapter.displayWinner("Artificial Intelligence Wins");
+                        gameEnd = true;
+                    }
                 }
             }
-            return best_col;
-        } else {
-            int value = Integer.MAX_VALUE;
-            int best_col = 0;
-            char c = 'X';
-            for (Integer x : valid_locations) {
-                Board temp = board.duplicate(board);
-                temp.updateBoard(temp, c, x);
-                int score = minimax(temp, depth - 1, true);
-                if (score < value) {
-                    value = score;
-                    best_col = x;
-                }
-            }
-            return best_col;
+            gamePlayAdapter.addDice(row, aiColumn);
         }
     }
 }

@@ -1,15 +1,21 @@
 package Connect;
 
 /*Board Class
-* This class handles everything related to the board;:
-* Handling valid moves
-* Making a deep copy of the original board
-* Updating original board depending on the column passed by the player or AI*/
+ * This class handles everything related to the board;:
+ * Handling valid moves
+ * Making a deep copy of the original board
+ * Updating original board depending on the column passed by the player or AI*/
+
+//TODO Export depth (row) to Controller
+
+import GUI.GamePlayAdapter;
 
 public class Board {
     Token[][] token;
+    private static Board single_instance = null;
+    private int row;
 
-    Board() {
+    public Board() {
         token = new Token[6][7];
         makeboard(token);
     }
@@ -24,35 +30,36 @@ public class Board {
     }
 
     //Checks for the valid move on the column passed by the players or AI
-    boolean valid_move(Board board, int col) {
-        return board.token[0][col].disk == ' ';
+    public boolean valid_move(int col) {
+        return token[0][col].disk == ' ';
     }
 
     //Updates the board according to the columns given by the player or the best column selected by AI
-    void updateBoard(Board board, char c, int col) {
+    public int updateBoard(char c, int col) {
         int j;
         j = col;
         int depth = -1;
-        for (int i = 0; i < board.token.length; i++) {
-            if (board.token[i][j].disk == ' ') {
+        for (int i = 0; i < token.length; i++) {
+            if (token[i][j].disk == ' ') {
                 depth++;
             }
         }
-        board.token[depth][j] = new Token(c);
+        token[depth][j] = new Token(c);
+        return depth;
     }
 
     //Check for win state on the entire board
-    char[] foundWinner(Board board) {
+    public char[] foundWinner() {
         //int count = 0;
         char[] result = {'F', ' '};
         char[] arr = {',', 'l', 'k', 'f'};
 
         //check for right
-        for (int i = 0; i < board.token.length; i++) {
-            for (int j = 0; j < board.token[0].length - 3; j++) {
+        for (int i = 0; i < token.length; i++) {
+            for (int j = 0; j < token[0].length - 3; j++) {
                 for (int k = 0; k < 4; k++) {
-                    if (board.token[i][j + k].disk != ' ')
-                        arr[k] = board.token[i][j + k].disk;
+                    if (token[i][j + k].disk != ' ')
+                        arr[k] = token[i][j + k].disk;
                 }
                 if (arr[0] == arr[1] && arr[1] == arr[2] && arr[2] == arr[3]) {
                     result[0] = 'T';
@@ -67,11 +74,11 @@ public class Board {
         //check column
         arr = new char[]{',', 'l', 'k', 'f'};
 
-        for (int i = 0; i < board.token.length - 3; i++) {
-            for (int j = 0; j < board.token[0].length; j++) {
+        for (int i = 0; i < token.length - 3; i++) {
+            for (int j = 0; j < token[0].length; j++) {
                 for (int k = 0; k < 4; k++) {
-                    if (board.token[i + k][j].disk != ' ')
-                        arr[k] = board.token[i + k][j].disk;
+                    if (token[i + k][j].disk != ' ')
+                        arr[k] = token[i + k][j].disk;
                 }
                 if (arr[0] == arr[1] && arr[1] == arr[2] && arr[2] == arr[3]) {
                     result[0] = 'T';
@@ -86,11 +93,11 @@ public class Board {
 
         //diagonal-right check
         arr = new char[]{',', 'l', 'k', 'f'};
-        for (int i = 0; i < board.token.length - 3; i++) {
-            for (int j = 0; j < board.token[0].length - 3; j++) {
+        for (int i = 0; i < token.length - 3; i++) {
+            for (int j = 0; j < token[0].length - 3; j++) {
                 for (int k = 0; k < 4; k++) {
-                    if (board.token[i + k][j + k].disk != ' ')
-                        arr[k] = board.token[i + k][j + k].disk;
+                    if (token[i + k][j + k].disk != ' ')
+                        arr[k] = token[i + k][j + k].disk;
                 }
                 if (arr[0] == arr[1] && arr[1] == arr[2] && arr[2] == arr[3]) {
                     result[0] = 'T';
@@ -105,11 +112,11 @@ public class Board {
         //diagonal opposite direction
         arr = new char[]{',', 'l', 'k', 'f'};
 
-        for (int i = 0; i < board.token.length - 3; i++) {
-            for (int j = 3; j < board.token[0].length; j++) {
+        for (int i = 0; i < token.length - 3; i++) {
+            for (int j = 3; j < token[0].length; j++) {
                 for (int k = 0; k < 4; k++) {
-                    if (board.token[i + k][j - k].disk != ' ')
-                        arr[k] = board.token[i + k][j - k].disk;
+                    if (token[i + k][j - k].disk != ' ')
+                        arr[k] = token[i + k][j - k].disk;
                 }
                 if (arr[0] == arr[1] && arr[1] == arr[2] && arr[2] == arr[3]) {
                     result[0] = 'T';
@@ -124,12 +131,12 @@ public class Board {
     }
 
     //checks if the board is full or not
-    boolean isFull(Board board) {
+    public boolean isFull() {
         boolean result = false;
         int count = 0;
-        for (int i = 0; i < board.token.length; i++) {
-            for (int j = 0; j < board.token[0].length; j++) {
-                if (board.token[i][j].disk != ' ') {
+        for (int i = 0; i < token.length; i++) {
+            for (int j = 0; j < token[0].length; j++) {
+                if (token[i][j].disk != ' ') {
                     count++;
                 }
             }
@@ -140,10 +147,10 @@ public class Board {
     }
 
     //prints the board after a move is made by a player or AI
-    void printBoard(Board board) {
-        for (int i = 0; i < board.token.length; i++) {
-            for (int j = 0; j < board.token[0].length; j++) {
-                System.out.print(board.token[i][j]);
+    public void printBoard() {
+        for (int i = 0; i < token.length; i++) {
+            for (int j = 0; j < token[0].length; j++) {
+                System.out.print(token[i][j]);
                 System.out.print("  |  ");
             }
             System.out.println();
@@ -162,5 +169,11 @@ public class Board {
         return temp;
     }
 
+    public static Board getInstance() {
+        if (single_instance == null)
+            single_instance = new Board();
+
+        return single_instance;
+    }
 
 }

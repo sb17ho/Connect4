@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.text.Text?>
+<?import javafx.geometry.Insets?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+
+<HBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="GUI.Controller">
+
+    <padding>
+        <Insets topRightBottomLeft="5"/>
+    </padding>
+
+    <VBox prefWidth="230">
+        <VBox spacing="10">
+            <padding>
+                <Insets top="150" left="10" right="10"/>
+            </padding>
+            <ComboBox fx:id="gamePlayChoice" prefWidth="170">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="PlayerVsPlayer"/>
+                        <String fx:value="PlayerVsComputer"/>
+                    </FXCollections>
+                </items>
+
+                <value>
+                    <String fx:value="PlayerVsPlayer"/>
+                </value>
+            </ComboBox>
+
+            <!--Need to set visibility-->
+            <ComboBox fx:id="difficultyChoice" prefWidth="170" disable="true">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Easy"/>
+                        <String fx:value="Normal"/>
+                        <String fx:value="Medium"/>
+                        <String fx:value="Hard"/>
+                    </FXCollections>
+                </items>
+
+                <value>
+                    <String fx:value="Easy"/>
+                </value>
+            </ComboBox>
+        </VBox>
+
+        <VBox spacing="10">
+            <padding>
+                <Insets top="50" left="10" right="10"/>
+            </padding>
+
+            <Button text="Start" fx:id="startGame" prefWidth="80"/>
+            <Button text="Quit" fx:id="quitGame" prefWidth="80"/>
+            <Text text="Winner!"/>
+            <TextField fx:id="winnerInfo" editable="false" prefWidth="190"/>
+        </VBox>
+    </VBox>
+
+    <Pane fx:id="pane" prefHeight="600" prefWidth="920"
+          onMouseClicked="#mouseClick" visible="false">
+        <padding>
+            <Insets topRightBottomLeft="10"/>
+        </padding>
+
+    </Pane>
+
+</HBox>
