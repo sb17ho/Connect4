@@ -1,13 +1,13 @@
 package Connect;
 
 /*AILogic a.k.a AI class
-* Handles everything related to AI ie.:
-* Handling board evaluation based on the disk in the board and providing a heuristics score based on the best score evaluated by AI
-* Traverses the entire boards to provide the heuristics function rows and columns to evaluate score based on the disk in the board
-* Checks for the valid columns and provide an array of columns that are empty and suitable to take a move
-* Minimax: Works on making the child nodes of the root board and making evaluation based on the moves that AI can make for
-           * the best heuristic score as well as checking the moves that the opponent can make and evaluating accordingly to provide
-           * the possible score possible provided that the player plays optimally*/
+ * Handles everything related to AI ie.:
+ * Handling board evaluation based on the disk in the board and providing a heuristics score based on the best score evaluated by AI
+ * Traverses the entire boards to provide the heuristics function rows and columns to evaluate score based on the disk in the board
+ * Checks for the valid columns and provide an array of columns that are empty and suitable to take a move
+ * Minimax: Works on making the child nodes of the root board and making evaluation based on the moves that AI can make for
+ * the best heuristic score as well as checking the moves that the opponent can make and evaluating accordingly to provide
+ * the possible score possible provided that the player plays optimally*/
 
 import java.util.ArrayList;
 
@@ -33,38 +33,38 @@ public class AILogic {
         }
 
         //Player disk
-        for (int i = 0; i < check.length; i++) {
-            if (check[i] == c) {
+        //TODO Trying to have more negative impact on player favour than positive towards AI win
+        for (char value : check) {
+            if (value == c) {
                 diskcount++;
-            } else if (check[i] == ' ') {
+            } else if (value == ' ') {
                 blankcount++;
-            } else if (check[i] == opponent) {
+            } else if (value == opponent) {
                 oppcount++;
             }
         }
 
         if (diskcount == 4) {
-            return 10000000;
+            return 1000000; //TODO: Was 10000000
         } else if (oppcount == 4) {
             return -10000000;
         }
 
         if (diskcount == 3 && blankcount == 1) {
-            score += 5;
+            score += 100; //TODO was 5
         } else if (diskcount == 2 && blankcount == 2) {
-            score += 2;
+            score += 50; //TODO was 2
         }
 
-        if (diskcount == 1 && blankcount == 1 && oppcount == 2){
-            score -= 3;
-        }else if(diskcount==2 && blankcount == 1 && oppcount ==1){
-            score += 1;
+        if (diskcount == 1 && blankcount == 1 && oppcount == 2) {
+            score -= 10000; //TODO Was 3
+        } else if (diskcount == 2 && blankcount == 1 && oppcount == 1) {
+            score += 5;
         }
 
         if (oppcount == 3 && blankcount == 1) {
-            score -= 100;
+            score -= 100000; //TODO 100
         }
-
         return score;
     }
 
@@ -72,15 +72,15 @@ public class AILogic {
     //AI and Player disks for to function to return the score based on the move made by the AI.
     int heuristics_win(Board board, char c) {
         int moveScore = 0;
-        int centerpiece = 0;
+        int centerpiece = -1; //TODO Changed from 0
 
-        int center = (board.token[0].length / 2);
-        for (int i = 0; i < board.token.length; i++) {
-            if (board.token[i][center].disk == c) {
-                centerpiece++;
-            }
-        }
-        moveScore += centerpiece * 3; // giving center main priority since its easy making 4 connects by filling the center column.
+//        int center = (board.token[0].length / 2);
+//        for (int i = 0; i < board.token.length; i++) {
+//            if (board.token[i][center].disk == c) {
+//                centerpiece++;
+//            }
+//        }
+//        moveScore += centerpiece * 3; // giving center main priority since its easy making 4 connects by filling the center column.
 
 
         //horizontal
@@ -91,7 +91,6 @@ public class AILogic {
                     row[k] = board.token[i][j + k].disk;
                 }
                 moveScore += evaluate_score(row, c);
-                //System.out.println(moveScore);
             }
         }
         //vertical
@@ -113,7 +112,6 @@ public class AILogic {
                     diag[k] = board.token[i + k][j + k].disk;
                 }
                 moveScore += evaluate_score(diag, c);
-                //System.out.println(moveScore);
             }
         }
 
@@ -127,9 +125,7 @@ public class AILogic {
                 moveScore += evaluate_score(slopdiag, c);
             }
         }
-
         return moveScore;
-
     }
 
     //Provides an array of valid columns where the AI can make moves
@@ -159,9 +155,9 @@ public class AILogic {
         return result;
     }
 
-   /* Minimax: Works on making the child nodes of the root board and making evaluation based on the moves that AI can make for
-            *  the best heuristic score as well as checking the moves that the opponent can make and evaluating accordingly to provide
-            *  the possible score possible provided that the player plays optimally*/
+    /* Minimax: Works on making the child nodes of the root board and making evaluation based on the moves that AI can make for
+     *  the best heuristic score as well as checking the moves that the opponent can make and evaluating accordingly to provide
+     *  the possible score possible provided that the player plays optimally*/
 
     public int minimax(Board board, int depth, boolean maxplayer) {
         char[] winner = board.foundWinner();
@@ -177,11 +173,11 @@ public class AILogic {
         ArrayList<Integer> valid_locations = valid_columns(board);
 
         if (depth == 0 || board.isFull()) {
-//            if (playerwin) {
-//                return -1000000000;
-//            } else if (AI_win) {
-//                return 1000000000
-//          }
+            if (playerwin) {
+                return -1000000000;
+            } else if (AI_win) {
+                return 1000000000;
+            }
             if (board.isFull()) {
                 return 0;
             } else {

@@ -1,6 +1,7 @@
 package GUI;
 
 import Connect.*;
+import javafx.animation.TranslateTransition;
 
 public class GamePlayAdapter {
 
@@ -77,6 +78,10 @@ public class GamePlayAdapter {
 
     public void displayWinner(String message) {
         controller.displayMessage(message);
+    }
+
+    public TranslateTransition getTransition() {
+        return controller.getTransition();
     }
 
     public static GamePlayAdapter getInstance(Controller controller) {

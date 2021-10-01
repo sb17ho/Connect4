@@ -62,7 +62,6 @@ public class GamePlay {
     public static void playerVsAI(int difficultyChoice, GamePlayAdapter gamePlayAdapter, int column,
                                   int turn) {
         //AI vs Human
-        AILogic game = new AILogic(gamePlayAdapter.getBoard());
         char c;
         int row = -1;
 
@@ -94,14 +93,24 @@ public class GamePlay {
             gamePlayAdapter.addDice(row, gamePlayAdapter.getColumn());
             turn *= -1;
             gamePlayAdapter.setTurn(turn);
+
+            int finalTurn = turn;
+            gamePlayAdapter.getTransition().setOnFinished(actionEvent -> {
+                AI(difficultyChoice, gamePlayAdapter, column, finalTurn);
+            });
         }
+    }
+
+    public static void AI(int difficultyChoice, GamePlayAdapter gamePlayAdapter, int column,
+                          int turn) {
         if (turn == 1) { //AI
+            AILogic game = new AILogic(gamePlayAdapter.getBoard());
             //AI looks for the best possible move as the move made by the human, provided if the plays optimally
             int aiColumn = game.minimax(gamePlayAdapter.getBoard(), difficultyChoice, true);
             System.out.println("Difficulty: " + difficultyChoice);
-            c = 'O';
+            char c = 'O';
 
-            row = gamePlayAdapter.getBoard().updateBoard(c, aiColumn);
+            int row = gamePlayAdapter.getBoard().updateBoard(c, aiColumn);
 
             //updates the boards according to the best column selected by AI
             gamePlayAdapter.printBoard();
@@ -117,6 +126,7 @@ public class GamePlay {
                     }
                 }
             }
+            gamePlayAdapter.setTurn(turn);
             gamePlayAdapter.addDice(row, aiColumn);
         }
     }

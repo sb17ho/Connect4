@@ -16,7 +16,7 @@
         <Insets topRightBottomLeft="5"/>
     </padding>
 
-    <VBox prefWidth="230">
+    <VBox prefWidth="200">
         <VBox spacing="10">
             <padding>
                 <Insets top="150" left="10" right="10"/>
@@ -59,7 +59,7 @@
             <Button text="Start" fx:id="startGame" prefWidth="80"/>
             <Button text="Quit" fx:id="quitGame" prefWidth="80"/>
             <Text text="Winner!"/>
-            <TextField fx:id="winnerInfo" editable="false" prefWidth="190"/>
+            <TextField fx:id="winnerInfo" editable="false" prefWidth="170"/>
         </VBox>
     </VBox>
 

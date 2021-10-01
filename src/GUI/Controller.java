@@ -48,6 +48,7 @@ public class Controller {
     private final int ROWS = 6;
     private final int RADIUS = 60;
     private String message;
+    private TranslateTransition a;
 
     @FXML
     void initialize() {
@@ -128,9 +129,13 @@ public class Controller {
 
     private void addAnimation(Circle circle, int row, int col) {
         pane.getChildren().add(circle);
-        TranslateTransition a = new TranslateTransition(Duration.seconds(0.5), circle);
+        a = new TranslateTransition(Duration.seconds(0.5), circle);
         a.setToY(circles.get(row).get(col).getCenterY() - RADIUS - 7.5);
         a.play();
+    }
+
+    public TranslateTransition getTransition() {
+        return a;
     }
 
     public int getColumn() {
