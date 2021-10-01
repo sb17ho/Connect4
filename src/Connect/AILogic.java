@@ -72,16 +72,6 @@ public class AILogic {
     //AI and Player disks for to function to return the score based on the move made by the AI.
     int heuristics_win(Board board, char c) {
         int moveScore = 0;
-        int centerpiece = -1; //TODO Changed from 0
-
-//        int center = (board.token[0].length / 2);
-//        for (int i = 0; i < board.token.length; i++) {
-//            if (board.token[i][center].disk == c) {
-//                centerpiece++;
-//            }
-//        }
-//        moveScore += centerpiece * 3; // giving center main priority since its easy making 4 connects by filling the center column.
-
 
         //horizontal
         for (int i = 0; i < board.token.length; i++) {
@@ -103,7 +93,6 @@ public class AILogic {
                 moveScore += evaluate_score(col, c);
             }
         }
-
         //diagonal
         for (int i = 0; i < board.token.length - 3; i++) {
             char[] diag = new char[4];
@@ -114,7 +103,6 @@ public class AILogic {
                 moveScore += evaluate_score(diag, c);
             }
         }
-
         //diagonal opposite direction
         for (int i = 0; i < board.token.length - 3; i++) {
             char[] slopdiag = new char[4];
@@ -137,22 +125,6 @@ public class AILogic {
             }
         }
         return validcol;
-    }
-
-    //Checks of the board is full #NOT USING NOW
-    boolean isFull(Board board) {
-        boolean result = false;
-        int count = 0;
-        for (int i = 0; i < board.token.length; i++) {
-            for (int j = 0; j < board.token[0].length; j++) {
-                if (board.token[i][j].disk != ' ') {
-                    count++;
-                }
-            }
-        }
-        if (count == (board.token.length * board.token[0].length)) result = true;
-
-        return result;
     }
 
     /* Minimax: Works on making the child nodes of the root board and making evaluation based on the moves that AI can make for

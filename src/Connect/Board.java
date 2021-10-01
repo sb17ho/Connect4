@@ -10,6 +10,8 @@ package Connect;
 
 import GUI.GamePlayAdapter;
 
+import java.util.Arrays;
+
 public class Board {
     Token[][] token;
     private static Board single_instance = null;
@@ -39,11 +41,8 @@ public class Board {
         int j;
         j = col;
         int depth = -1;
-        for (int i = 0; i < token.length; i++) {
-            if (token[i][j].disk == ' ') {
-                depth++;
-            }
-        }
+
+        depth += Arrays.stream(token).filter(tokens -> tokens[j].disk == ' ').count();
         token[depth][j] = new Token(c);
         return depth;
     }
@@ -132,18 +131,8 @@ public class Board {
 
     //checks if the board is full or not
     public boolean isFull() {
-        boolean result = false;
-        int count = 0;
-        for (int i = 0; i < token.length; i++) {
-            for (int j = 0; j < token[0].length; j++) {
-                if (token[i][j].disk != ' ') {
-                    count++;
-                }
-            }
-        }
-        if (count == (token.length * token[0].length)) result = true;
-
-        return result;
+        return Arrays.stream(token).mapToInt(tokens -> (int) Arrays.stream(tokens).filter(disk -> disk.getDisk() != ' ').count()).sum()
+                == token.length * token[0].length;
     }
 
     //prints the board after a move is made by a player or AI

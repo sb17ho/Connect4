@@ -3,16 +3,11 @@ package GUI;
 import Connect.GamePlay;
 import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
@@ -44,7 +39,6 @@ public class Controller {
     private int turn = -1;
     private final Color player1Die = Color.RED;
     private final Color player2Die = Color.YELLOW;
-    private final int COLUMNS = 7;
     private final int ROWS = 6;
     private final int RADIUS = 60;
     private String message;
@@ -82,6 +76,7 @@ public class Controller {
     void createBoard(Pane mainPane) {
         double r = RADIUS + 2, x = 70, y = 68;
         for (int i = 0; i < ROWS; i++) {
+            int COLUMNS = 7;
             for (int j = 0; j < COLUMNS; j++) {
                 circles.get(i).add(new Circle(x, y, r, Color.WHITE));
                 x = x + (r * 2) + 5;
